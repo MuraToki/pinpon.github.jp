@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スカッシュ</title>
+</head>
+<body>
+  <script>
+    const h1 = document.createElement( 'h1' )
+    document.body.appendChild( h1 )
+    h1.innerText = "ゲームオーバーのテスト：クリックでスタート"
+
+    const cv_w = 640
+    const cv_h = 480
+    const cv = document.createElement( 'canvas' )
+    cv.setAttribute ( 'width', cv_w )
+    cv.setAttribute( 'height', cv_h )
+    document.body.appendChild ( cv )
+    const ctx = cv.getContext( '2d' )
+
+  function draw_screen() {
+    ctx.fillStyle = 'LightGreen'
+    ctx.fillRect( 0, 0, cv_w, cv_h )
+  }  
+
+    let ball_ichi_x = 0
+    let ball_ichi_y = 250
+    const ball_size = 10
+  function draw_ball() {
+    ctx.beginPath()
+    ctx.arc( ball_ichi_x, ball_ichi_y, ball_size, 0, 2 * Math.PI )
+    ctx.fillStyle = 'Teal'
+    ctx.fill()
+  }  
+
+    let ball_idou_x = 15
+    let ball_idou_y = -15
+    function move_ball() {
+          if ( is_gameover ) return
+          
+          if ( ball_ichi_x+ball_idou_x < 0) {
+            ball_idou_x *= -1
+          }
+      
+          if ( ball_ichi_x+ball_idou_x > cv_w ) {
+            ball_idou_x *= -1
+          }
+      
+          if ( ball_ichi_y+ball_idou_y < 0 ) {
+            ball_idou_y *= -1
+          }
+
+          if ( ball_ichi_y+ball_idou_y > cv_h-10 ) {
+            if ( racket_ichi_x < ball_ichi_x+ball_idou_x ) {
+              if ( ball_ichi_x+ball_idou_x < racket_ichi_x+racket_size ) {
+                ball_idou_y *= -1
+                if ( Math.random() < 0.5 )
+                    ball_idou_x *= -1
+
+              const mes = Math.floor( Math.random() * 5 )
+              let message = ''
+              if ( mes == 0 ) 
+                message = 'うまい！'
+              if ( mes == 1 )
+                message = 'グッド！'
+              if ( mes == 2 )
+                message = 'ナイス！'
+              if ( mes == 3 )
+                message = 'いいぞ！'
+              if ( mes == 4 )
+                message = '素晴らしい！'
+              
+                point += 5
+
+                h1.innerText = message + '得点:' + point
+              }
+            }
+          }
+      
+          if ( ball_ichi_y+ball_idou_y > cv_h ) {
+            const mes = Math.floor( Math.random() * 3 )
+            let message = ''
+            if ( mes == 0 )
+              message = '下手くそ！'
+            if ( mes == 1 )
+              message = 'ミスしたね！'
+            if ( mes == 2 )
+              message = 'あーあー、見てられへんわ！'
+
+
+
+            h1.innerText = message + "得点:" + point
+            is_gameover = true
+            return
+          }
+
+      ball_ichi_x += ball_idou_x
+      ball_ichi_y += ball_idou_y
+    }
+
+    let racket_ichi_x = 0
+    const racket_size = 100
+    function draw_racket() {
+      ctx.fillStyle = 'FireBrick'
+      ctx.fillRect( racket_ichi_x, cv_h-10, racket_size, 8 )
+    }
+
+    cv.onmousemove = ev => {
+      racket_ichi_x = ev.offsetX
+    }
+
+    let is_gameover = true
+    let point = 0
+    function init_game() {
+      is_gameover = false
+      point = 0
+      ball_ichi_x = 0
+      ball_ichi_y = 250
+      ball_idou_x = 15
+      ball_idou_y = -15
+
+      h1.innerText = "ゲームスターティン！:スタート！"
+    }
+
+    cv.onclick = ev => {
+      if ( is_gameover ) 
+        init_game()
+    }
+
+    function game_loop() {
+      draw_screen()
+      draw_ball()
+      move_ball()
+      draw_racket()
+    }
+
+    setInterval( game_loop, 50 )
+
+  </script>
+  
+</body>
+</html>
